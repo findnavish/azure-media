@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="Content/bootstrap.min.css">
+    <link rel="stylesheet" href="Content/bootstrap-theme.min.css">
+</head>
+<body>   
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Azure Media Services</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Upload Video</a></li>
+                    <li><a href="#about">Get Encode Progress</a></li>
+                    <li><a href="#contact">Get Stream URL</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="col-xs-12" style="height:70px;"></div>
+    <div class="container theme-showcase" role="main">
+        <div class="jumbotron">
+            <h1>Azure Media Services Example</h1>
+            <p>This example illustrates uploading video to azure and leveraging Azure Media Services for video encoding and delivering it to clients for adaptive video streaming.</p>
+        </div>
+    </div> 
+    <div class="container">
+        <form>
+            <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Video Title</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="videoTitle" placeholder="Video Title">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Keywords</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="keywords" placeholder="Keywords">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2">Featured</label>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2"></label>
+                <div class="col-sm-10 custom-file">
+                    <div class="form-check">
+                        <label class="custom-file">
+                            <input type="file" id="myFile" class="custom-file-input">
+                            <span class="custom-file-control"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2"></label>
+                <div class="col-sm-10">
+                    <button type="button" id="Upload" name="Upload" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="Scripts/jquery-1.9.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#Upload').click(function () {
+                debugger;
+                var formData = new FormData();
+                var myFilePicker = $('#myFile')[0];
+                formData.append("myVideo", myFilePicker.files[0]);
+                formData.append("Title", "VideoTitle");
+                formData.append("StartDate", (new Date()).toUTCString());
+                formData.append("EndDate", (new Date()).toUTCString());
+                formData.append("Keywords", "Test");
+                formData.append("IsFeatured", true);
+
+                $.ajax({
+                    url: 'http://dasmobile/StoreVideoInformation/SaveVideoToFileSystemAsync',
+                    type: 'POST',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    error: onError,
+                    success: onSuccess
+                });
+            });
+        });
+        function onSuccess(data, status, jqXHR) { alert('success:' + status); };
+        function onError(jqXHR, status, errorThrown) { alert('error:' + errorThrown); };
+    </script>
+</body>
+</html>
