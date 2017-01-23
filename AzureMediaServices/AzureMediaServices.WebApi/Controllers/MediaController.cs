@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AzureMediaServices.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -12,7 +13,9 @@ namespace AzureMediaServices.WebApi.Controllers
         [HttpGet]
         [ActionName("Test")]
         public string Test()
-        {         
+        {
+            AzureHelper cc =  AzureHelper.AzureInstance;
+            
             return "This is a test controller to test WEB API";
         }
     }

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMediaServices.Website"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMediaServices.WebApi", "AzureMediaServices.WebApi\AzureMediaServices.WebApi.csproj", "{0C0C424D-E2F1-4F4E-8699-65E5C23325F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureMediaServices.Common", "AzureMediaServices.Common\AzureMediaServices.Common.csproj", "{15E500E0-33AC-41FB-88CF-6432E8D4FCA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +23,15 @@ Global
 		{0C0C424D-E2F1-4F4E-8699-65E5C23325F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C0C424D-E2F1-4F4E-8699-65E5C23325F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C0C424D-E2F1-4F4E-8699-65E5C23325F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15E500E0-33AC-41FB-88CF-6432E8D4FCA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15E500E0-33AC-41FB-88CF-6432E8D4FCA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15E500E0-33AC-41FB-88CF-6432E8D4FCA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15E500E0-33AC-41FB-88CF-6432E8D4FCA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4
 	EndGlobalSection
 EndGlobal
