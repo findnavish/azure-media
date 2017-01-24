@@ -1,9 +1,13 @@
 ﻿using AzureMediaServices.Common;
+using AzureMediaServices.Common.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 
 namespace AzureMediaServices.WebApi.Controllers
@@ -12,11 +16,32 @@ namespace AzureMediaServices.WebApi.Controllers
     {
         [HttpGet]
         [ActionName("Test")]
-        public string Test()
+        public HttpResponseMessage Test()
         {
-            AzureHelper cc =  AzureHelper.AzureInstance;
-            
-            return "This is a test controller to test WEB API";
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        [HttpGet]
+        [HttpPost]
+        [ActionName("PostVideo")]
+        public async Task<HttpResponseMessage> PostVideo()
+        {
+            try
+            {   
+                HttpPostedFile pf = HttpContext.Current.Request.Files[0];
+                FileInfo fi = new FileInfo(pf.FileName);               
+                Stream fileStream = pf.InputStream;
+                byte[] input = new byte[pf.ContentLength];
+                //read the file bytes asynchronously
+                await fileStream.ReadAsync(input, 0, pf.ContentLength);              
+                AzureHelper cc = AzureHelper.AzureInstance;
+                string assetId = cc.Upload(fi.Name, input);
+                return Request.CreateResponse(HttpStatusCode.OK, assetId);
+            }
+            catch (System.Exception e)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e.Message, e);
+            }
         }
     }
 }
