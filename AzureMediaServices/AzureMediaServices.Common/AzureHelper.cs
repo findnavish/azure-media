@@ -29,79 +29,13 @@ namespace AzureMediaServices.Common
         #endregion
 
         #region Private Contructor
-        private AzureHelper() { }
-        #endregion
-
-        #region Private Properties
-        private CloudStorageAccount StorageAccount
+        private AzureHelper()
         {
-            get
-            {
-                if (azureInstance.storageAccount == null)
-                {
-                    azureInstance.storageAccount = new CloudStorageAccount(
-                        StorageCredentials,
-                        ConfigurationManager.AppSettings["govCloudEndPointSuffix"],
-                        false);
-                }
-
-                return azureInstance.storageAccount;
-            }
-        }
-
-        private StorageCredentials StorageCredentials
-        {
-            get
-            {
-                if (azureInstance.storageCredentials == null)
-                {
-                    azureInstance.storageCredentials = new StorageCredentials(
-                        ConfigurationManager.AppSettings["storageAccountName"],
-                        ConfigurationManager.AppSettings["storageAccountKey"]);
-                }
-
-                return azureInstance.storageCredentials;
-            }
-        }
-
-        private CloudBlobClient BlobClient
-        {
-            get
-            {
-                if (azureInstance.blobClient == null)
-                {
-                    azureInstance.blobClient = azureInstance.StorageAccount.CreateCloudBlobClient();
-                }
-
-                return azureInstance.blobClient;
-            }
-        }
-
-        private MediaServicesCredentials CachedCredentials
-        {
-            get
-            {
-                if (azureInstance.cachedCredentials == null)
-                {
-                    azureInstance.cachedCredentials = new MediaServicesCredentials(ConfigurationManager.AppSettings["azureMediaServiceAccountName"], ConfigurationManager.AppSettings["azureMediaServiceAccountKey"], ConfigurationManager.AppSettings["azureMediaServiceUrn"], ConfigurationManager.AppSettings["acsBaseAddress"]);
-                }
-
-                return azureInstance.cachedCredentials;
-            }
-        }
-
-
-        private CloudMediaContext Context
-        {
-            get
-            {
-                if (azureInstance.context == null)
-                {
-                    azureInstance.context = new CloudMediaContext(new Uri(ConfigurationManager.AppSettings["govCloudMediaApiServer"], UriKind.Absolute), azureInstance.CachedCredentials);
-                }
-
-                return azureInstance.context;
-            }
+            cachedCredentials = new MediaServicesCredentials(ConfigurationManager.AppSettings["azureMediaServiceAccountName"], ConfigurationManager.AppSettings["azureMediaServiceAccountKey"], ConfigurationManager.AppSettings["azureMediaServiceUrn"], ConfigurationManager.AppSettings["acsBaseAddress"]);
+            context = new CloudMediaContext(new Uri(ConfigurationManager.AppSettings["govCloudMediaApiServer"], UriKind.Absolute), cachedCredentials);
+            storageCredentials = new StorageCredentials(ConfigurationManager.AppSettings["storageAccountName"], ConfigurationManager.AppSettings["storageAccountKey"]);
+            storageAccount = new CloudStorageAccount(storageCredentials, ConfigurationManager.AppSettings["govCloudEndPointSuffix"], false);
+            blobClient = storageAccount.CreateCloudBlobClient();
         }
         #endregion
 
