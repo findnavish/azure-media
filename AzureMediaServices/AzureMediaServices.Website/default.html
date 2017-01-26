@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="Content/bootstrap.min.css">
     <link rel="stylesheet" href="Content/bootstrap-theme.min.css">
+    <title>Home screen to upload videos</title>
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -21,9 +22,10 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Upload Video</a></li>
-                    <li><a href="#about">Get Encode Progress</a></li>
-                    <li><a href="#contact">Get Stream URL</a></li>
+                    <li class="active"><a href="default.html">Upload Video</a></li>
+                    <li><a href="#">Get Encode Progress</a></li>
+                    <li><a href="#">Get Stream Url</a></li>
+                    <li><a href="#">Play Video</a></li>
                 </ul>
             </div>
         </div>
@@ -78,25 +80,25 @@
                 </div>
             </div>
 
-            <div id="myModal" class="modal fade" role="dialog">
+            <div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
                 <div class="modal-dialog">
-
                     <!-- Modal content-->
                     <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Modal Header</h4>
+                        <div class="modal-header">                            
+                            <h4 class="modal-title">Uploading Video</h4>
                         </div>
                         <div class="modal-body">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
-                                    <span class="sr-only"></span>
+                            <div id="progressStatus">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                                        <span class="sr-only"></span>
+                                    </div>
                                 </div>
                             </div>  
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default"  data-dismiss="modal">Close</button>
-                        </div>
+                        <!--<div class="modal-footer">
+                            <button id="closeButton" type="button" class="btn btn-default"  data-dismiss="modal"></button>
+                        </div>-->
                     </div>
 
                 </div>
@@ -108,60 +110,13 @@
 
     <script src="Scripts/jquery-1.9.1.min.js"></script>
     <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/custom.js"></script>
     <script type="text/javascript">
         $(function () {
             $('#Upload').click(function () {
-
-                var formData = new FormData();
-                var myFilePicker = $('#myFile')[0];
-                formData.append("myVideo", myFilePicker.files[0]);
-                formData.append("Title", "VideoTitle");
-                formData.append("StartDate", (new Date()).toUTCString());
-                formData.append("EndDate", (new Date()).toUTCString());
-                formData.append("Keywords", "Test");
-                formData.append("IsFeatured", true);
-
-                $.ajax({
-                    url: 'http://localhost:52961/Media/PostVideo',
-                    type: 'POST',
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    error: onError,
-                    success: onSuccess,
-                    xhrFields: {
-                        withCredentials: true
-                    },
-                    xhr: function () {
-                        var xhr = new window.XMLHttpRequest();
-                        xhr.withCredentials = true;
-                        xhr.upload.addEventListener("progress", function (evt) {
-                            if (evt.lengthComputable) {
-                                var percentComplete = evt.loaded / evt.total;
-                                var perc = (Math.round(percentComplete * 100));
-                                if (perc < 100) {
-                                    $('#myModal').modal();
-                                    $('.progress-bar').css('width', perc + '%').attr('aria-valuenow', perc); 
-                                }
-                                else if (perc = 100)
-                                {
-                                    $('#myModal').modal();
-                                    $('.progress-bar').attr('class', 'progress-bar progress-bar-success progress-bar-striped'); 
-                                }
-                            }
-                        }, false);                        
-                        return xhr;
-                    },
-                });
+                AZ.PostVideo();
             });
-        });
-        function onSuccess(data, status, jqXHR) {
-            $('#myModal').modal('hide');
-
-            alert('success:' + status);
-        };
-        function onError(jqXHR, status, errorThrown) { alert('error:' + errorThrown); };
+        });        
     </script>
 </body>
 </html>

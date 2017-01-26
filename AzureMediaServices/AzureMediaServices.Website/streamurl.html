@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="Content/bootstrap.min.css">
+    <link rel="stylesheet" href="Content/bootstrap-theme.min.css">
+    <title>This page accepts the asset id and finds the stream URL and streams the video in Azure Media player</title>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Azure Media Services</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="default.html">Upload Video</a></li>
+                <li ><a href="#">Get Encode Progress</a></li>
+                <li class="active"><a href="#">Get Stream Url</a></li>
+            </ul>
+        </div>
+    </div>
+    </nav>
+    <div class="col-xs-12" style="height:70px;"></div>
+    <div class="container theme-showcase" role="main">
+        <div class="jumbotron">
+            <h1>Encode Progress</h1>
+            <p> </p>
+        </div>
+    </div>
+    <div class="container">
+        <form>
+            <div class="form-group row">
+                <label for="assetId" class="col-sm-2 col-form-label">Stream URL</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="streamUrl" readonly>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2">Message</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="customMessage" readonly>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <script src="Scripts/jquery-1.9.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/custom.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            AZ.GetStreamUrl();
+        });
+    </script>
+
+</body>
+</html>

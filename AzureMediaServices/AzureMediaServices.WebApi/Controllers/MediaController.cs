@@ -36,7 +36,40 @@ namespace AzureMediaServices.WebApi.Controllers
                 await fileStream.ReadAsync(input, 0, pf.ContentLength);              
                 AzureHelper cc = AzureHelper.AzureInstance;
                 string assetId = cc.Upload(fi.Name, input);
+                cc.Encode(assetId);
                 return Request.CreateResponse(HttpStatusCode.OK, assetId);
+            }
+            catch (System.Exception e)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e.Message, e);
+            }
+        }
+
+        [HttpGet]        
+        [ActionName("GetEncodingProgress")]
+        public HttpResponseMessage GetEncodingProgress(string assetId)
+        {
+            try
+            {
+                AzureHelper cc = AzureHelper.AzureInstance;
+                VideoState state = cc.TrackEncodeProgress(assetId);
+                return Request.CreateResponse(HttpStatusCode.OK, state);
+            }
+            catch (System.Exception e)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e.Message, e);
+            }
+        }
+
+        [HttpGet]
+        [ActionName("GetStreamUrl")]
+        public HttpResponseMessage GetStreamUrl(string assetId)
+        {
+            try
+            {
+                AzureHelper cc = AzureHelper.AzureInstance;
+                VideoState state = cc.GetStreamUrl(assetId);
+                return Request.CreateResponse(HttpStatusCode.OK, state);
             }
             catch (System.Exception e)
             {

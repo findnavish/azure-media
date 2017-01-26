@@ -64,7 +64,11 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="encodeprogress.html" />
     <Content Include="packages.config" />
+    <Content Include="playVideo.html" />
+    <Content Include="streamurl.html" />
+    <Content Include="Scripts\custom.js" />
     <Content Include="Scripts\jquery-1.9.1.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
