@@ -32,9 +32,9 @@ namespace AzureMediaServices.Common
 
         private string encodingJobNamePrefix = "EncodingJob_";
         private string encodingTaskNamePrefix = "EncodingTask_";
-        private static string streamAssetNamePrefix = "StreamedAsset_";
-        private static string thumbnailJobNamePrefix = "ThumbnailJob_";
-        private static string thumbnailTaskNamePrefix = "ThumbnailTask_";
+        private string streamAssetNamePrefix = "StreamedAsset_";
+        private string thumbnailJobNamePrefix = "ThumbnailJob_";
+        private string thumbnailTaskNamePrefix = "ThumbnailTask_";
         #endregion
 
         #region Private Contructor
@@ -60,8 +60,6 @@ namespace AzureMediaServices.Common
                     {
                         if (azureInstance == null)
                         {
-
-
                             azureInstance = new AzureHelper();
                         }
                     }
@@ -114,7 +112,7 @@ namespace AzureMediaServices.Common
 
             IJob jobEncode = azureInstance.context.Jobs.Create(encodingJobNamePrefix + assetId);
             IMediaProcessor latestWameMediaProcessor = (from p in azureInstance.context.MediaProcessors where p.Name == "Media Encoder Standard" select p).ToList().OrderBy(wame => new Version(wame.Version)).LastOrDefault();
-            ITask encodeTask = jobEncode.Tasks.AddNew(encodingTaskNamePrefix + assetId, latestWameMediaProcessor, "H264 Multiple Bitrate 16x9 SD", TaskOptions.None);
+            ITask encodeTask = jobEncode.Tasks.AddNew(encodingTaskNamePrefix + assetId, latestWameMediaProcessor, "H264 Multiple Bitrate 1080p", TaskOptions.None);
             encodeTask.InputAssets.Add(assetToEncode);
             encodeTask.OutputAssets.AddNew(streamAssetNamePrefix + assetToEncode.Id, AssetCreationOptions.None);
             jobEncode.Submit(); // This will just kick of the video encoding job
@@ -140,14 +138,14 @@ namespace AzureMediaServices.Common
         public VideoState GetStreamUrl(string assetId)
         {
             VideoState state = TrackEncodeProgress(assetId);
-            
+
             if (state.State.Equals("Finished", StringComparison.InvariantCultureIgnoreCase))
             {
                 ITask encodingTask = GetEncodeTask(assetId);
                 IAsset encodedAsset = encodingTask.OutputAssets.FirstOrDefault();
                 string streamUrl = PublishOnDemand(encodedAsset, encodedAsset.Name, assetId);
                 state.StreamUrl = streamUrl.Replace("http:", "https:");
-            }           
+            }
 
             return state;
         }

@@ -99,14 +99,13 @@ AZ.GetEncodeProgress = function () {
             }, 10000);
         }
     };
-    function onError(jqXHR, status, errorThrown) {
-        debugger;
+    function onError(jqXHR, status, errorThrown) {      
         $('#customMessage').val('Error: ' + errorThrown);      
     };
 }
 
 AZ.GetStreamUrl = function () {
-    debugger;
+   
     var assetId = location.search.split('assetId=')[1];
 
     $.ajax({
@@ -124,7 +123,11 @@ AZ.GetStreamUrl = function () {
     function onSuccess(data, status, jqXHR) {  
         if (data.State == 'Finished') {
             $('#streamUrl').val(data.StreamUrl);
-            $('#customMessage').val('Video is read for streaming')
+            $('#customMessage').val('Video is read for streaming. You will be redirected to play the video in Azure media player');
+            setInterval(function () {
+                window.location.href = '/playVideo.html?streamUrl=' + data.StreamUrl;
+            }, 10000);
+
         } else if (data.State == 'Error') {
             $('#streamUrl').val('');
             $('#customMessage').val('Error in encoding job. Error: ' + data.Message);
@@ -141,6 +144,29 @@ AZ.GetStreamUrl = function () {
     function onError(jqXHR, status, errorThrown) {       
         $('#customMessage').val('Error: ' + errorThrown);
     };
+}
+
+AZ.PlayVideo = function () {
+   
+    var streamUrl = location.search.split('streamUrl=')[1];
+    $('#streamUrl').val(streamUrl);
+
+    var myPlayer = amp('vid1', { /* Options */
+        techOrder: ["azureHtml5JS", "flashSS", "html5FairPlayHLS", "silverlightSS", "html5"],
+        "nativeControlsForTouch": false,
+        autoplay: false,
+        controls: true,
+        width: "640",
+        height: "400",
+        poster: ""
+    });
+
+    myPlayer.src([{
+        src: streamUrl,
+        type: "application/vnd.ms-sstr+xml"
+    }]);
+
+    
 }
 
 
