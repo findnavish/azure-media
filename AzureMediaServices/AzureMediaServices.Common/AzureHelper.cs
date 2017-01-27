@@ -32,7 +32,7 @@ namespace AzureMediaServices.Common
 
         private string encodingJobNamePrefix = "EncodingJob_";
         private string encodingTaskNamePrefix = "EncodingTask_";
-        private string streamAssetNamePrefix = "StreamedAsset_";
+        private string streamAssetNamePrefix = "SA_"; // Streaming Asset (SA)
         private string thumbnailJobNamePrefix = "ThumbnailJob_";
         private string thumbnailTaskNamePrefix = "ThumbnailTask_";
         #endregion
@@ -114,7 +114,8 @@ namespace AzureMediaServices.Common
             IMediaProcessor latestWameMediaProcessor = (from p in azureInstance.context.MediaProcessors where p.Name == "Media Encoder Standard" select p).ToList().OrderBy(wame => new Version(wame.Version)).LastOrDefault();
             ITask encodeTask = jobEncode.Tasks.AddNew(encodingTaskNamePrefix + assetId, latestWameMediaProcessor, "H264 Multiple Bitrate 1080p", TaskOptions.None);
             encodeTask.InputAssets.Add(assetToEncode);
-            encodeTask.OutputAssets.AddNew(streamAssetNamePrefix + assetToEncode.Id, AssetCreationOptions.None);
+            string encodedAssetName = string.Concat(streamAssetNamePrefix,assetToEncode.Name);
+            encodeTask.OutputAssets.AddNew(encodedAssetName, AssetCreationOptions.None);
             jobEncode.Submit(); // This will just kick of the video encoding job
         }
 
@@ -143,19 +144,15 @@ namespace AzureMediaServices.Common
             {
                 ITask encodingTask = GetEncodeTask(assetId);
                 IAsset encodedAsset = encodingTask.OutputAssets.FirstOrDefault();
-                string streamUrl = PublishOnDemand(encodedAsset, encodedAsset.Name, assetId);
+                string streamUrl = PublishOnDemand(encodedAsset);
+                IAsset originalVideo = GetAssetById(assetId);
+                originalVideo.DeleteAsync(false);
                 state.StreamUrl = streamUrl.Replace("http:", "https:");
             }
 
             return state;
         }
-
-
-
-
-
-
-
+        
         #endregion
 
         #region Private Methods
@@ -189,18 +186,6 @@ namespace AzureMediaServices.Common
             return asset;
         }
 
-        private IAsset GetAssetByName(string assetName)
-        {
-            IAsset asset;
-            var assetInstance =
-                from a in azureInstance.context.Assets
-                where a.Name == assetName
-                select a;
-            asset = assetInstance.FirstOrDefault();
-
-            return asset;
-        }
-
         private ITask GetEncodeTask(string assetId)
         {
             string encodingJobName = encodingJobNamePrefix + assetId;
@@ -211,28 +196,20 @@ namespace AzureMediaServices.Common
             return encodingTask;
         }
 
-        private string PublishOnDemand(IAsset asset, string publishedName, string originalAssetId)
+        private string PublishOnDemand(IAsset asset)
         {
             string smoothStreamingUri = string.Empty;
-            IAsset assetExist = GetAssetByName(publishedName);
-            if (assetExist.Locators.Count == 0)
+            ILocator locatorOnDemand;
+            if (asset.Locators.Count == 0)
             {
-                publishedName = publishedName.Replace(":", "");
-                var assetFile = asset.AssetFiles.Create(publishedName);
-                assetFile.Update();
-                asset = azureInstance.context.Assets.Where(a => a.Id == asset.Id).FirstOrDefault();
-                ILocator onDemandLocator = CreateOnDemandLocator(asset);
-                var manifestFile = asset.AssetFiles.Where(f => f.Name.ToLower().EndsWith(".ism")).FirstOrDefault();
-                smoothStreamingUri = onDemandLocator.Path + manifestFile.Name + "/manifest";
-
+                locatorOnDemand = CreateOnDemandLocator(asset);                
             }
             else
             {
-                ILocator locatorOnDemand = assetExist.Locators.Where(l => l.Type.Equals(LocatorType.OnDemandOrigin)).FirstOrDefault();
-                var manifestFile = assetExist.AssetFiles.Where(f => f.Name.ToLower().EndsWith(".ism")).FirstOrDefault();
-                smoothStreamingUri = locatorOnDemand.Path + manifestFile.Name + "/manifest";
-
+                locatorOnDemand = asset.Locators.Where(l => l.Type.Equals(LocatorType.OnDemandOrigin)).FirstOrDefault();
             }
+            var manifestFile = asset.AssetFiles.Where(f => f.Name.ToLower().EndsWith(".ism")).FirstOrDefault();
+            smoothStreamingUri = locatorOnDemand.Path + manifestFile.Name + "/manifest";
             return smoothStreamingUri;
         }
         #endregion
