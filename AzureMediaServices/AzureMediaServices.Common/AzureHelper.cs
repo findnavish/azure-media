@@ -82,18 +82,14 @@ namespace AzureMediaServices.Common
         public string Upload(string fileName, byte[] videoBytes)
         {
             IAsset asset = azureInstance.context.Assets.Create(fileName, AssetCreationOptions.None);
-            ILocator destination = AssignSasLocator(asset);
-            CloudBlobContainer destContainer = blobClient.GetContainerReference(new Uri(destination.Path).Segments[1]);
+            //ILocator destination = AssignSasLocator(asset);
+            CloudBlobContainer destContainer = blobClient.GetContainerReference(new Uri(asset.Uri.ToString()).Segments[1]);
             CloudBlockBlob destBlob = destContainer.GetBlockBlobReference(fileName);
-            using (MemoryStream ms = new MemoryStream(videoBytes))
-            {
-                destBlob.UploadFromStream(ms);
-            }
-
+            destBlob.UploadFromByteArray(videoBytes, 0, videoBytes.Length);
             destBlob.SetProperties();
             IAssetFile assetFile = asset.AssetFiles.Create(fileName);
             assetFile.Update();
-            destination.Delete();
+            //destination.Delete();
 
             return asset.Id;
         }
@@ -114,7 +110,7 @@ namespace AzureMediaServices.Common
             IMediaProcessor latestWameMediaProcessor = (from p in azureInstance.context.MediaProcessors where p.Name == "Media Encoder Standard" select p).ToList().OrderBy(wame => new Version(wame.Version)).LastOrDefault();
             ITask encodeTask = jobEncode.Tasks.AddNew(encodingTaskNamePrefix + assetId, latestWameMediaProcessor, "H264 Multiple Bitrate 1080p", TaskOptions.None);
             encodeTask.InputAssets.Add(assetToEncode);
-            string encodedAssetName = string.Concat(streamAssetNamePrefix,assetToEncode.Name);
+            string encodedAssetName = string.Concat(streamAssetNamePrefix, assetToEncode.Name);
             encodeTask.OutputAssets.AddNew(encodedAssetName, AssetCreationOptions.None);
             jobEncode.Submit(); // This will just kick of the video encoding job
         }
@@ -152,7 +148,7 @@ namespace AzureMediaServices.Common
 
             return state;
         }
-        
+
         #endregion
 
         #region Private Methods
@@ -202,7 +198,7 @@ namespace AzureMediaServices.Common
             ILocator locatorOnDemand;
             if (asset.Locators.Count == 0)
             {
-                locatorOnDemand = CreateOnDemandLocator(asset);                
+                locatorOnDemand = CreateOnDemandLocator(asset);
             }
             else
             {
