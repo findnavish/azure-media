@@ -82,6 +82,7 @@ AZ.GetEncodeProgress = function () {
         var assetId = location.search.split('assetId=')[1];
         $('#videoAssetId').val(assetId);
         $('#jobState').val(data.State);
+        $('#progress').val(data.Progress);
         $('#customMessage').val('');
         if (data.State == 'Finished') {
             $('#customMessage').val('Encoding job is finished and you will be redirected to fetch the stream url.');
@@ -123,7 +124,7 @@ AZ.GetStreamUrl = function () {
     function onSuccess(data, status, jqXHR) {  
         if (data.State == 'Finished') {
             $('#streamUrl').val(data.StreamUrl);
-            $('#customMessage').val('Video is read for streaming. You will be redirected to play the video in Azure media player');
+            $('#customMessage').val('Video is ready for streaming. You will be redirected to play the video in Azure media player.');
             setInterval(function () {
                 window.location.href = '/playVideo.html?streamUrl=' + data.StreamUrl;
             }, 10000);
@@ -153,12 +154,13 @@ AZ.PlayVideo = function () {
 
     var myPlayer = amp('vid1', { /* Options */
         techOrder: ["azureHtml5JS", "flashSS", "html5FairPlayHLS", "silverlightSS", "html5"],
-        "nativeControlsForTouch": false,
-        autoplay: false,
+        "nativeControlsForTouch": true,
+        autoplay: true,
         controls: true,
         width: "640",
         height: "400",
-        poster: ""
+        logo:false       
+        
     });
 
     myPlayer.src([{

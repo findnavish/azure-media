@@ -14,6 +14,9 @@ namespace AzureMediaServices.Common.Entities
         public string State { get; set; }
 
         [DataMember]
+        public double Progress { get; set; }
+
+        [DataMember]
         public string Message { get; set; }
 
         [DataMember]

@@ -117,8 +117,9 @@ namespace AzureMediaServices.Common
 
         public VideoState TrackEncodeProgress(string assetId)
         {
-            ITask encodingTask = GetEncodeTask(assetId);
+            ITask encodingTask = GetEncodeTask(assetId);            
             VideoState state = new VideoState();
+            state.Progress = Math.Round(encodingTask.Progress, 0);
             if (encodingTask.State == JobState.Error)
             {
                 state.State = encodingTask.State.ToString();
@@ -142,7 +143,9 @@ namespace AzureMediaServices.Common
                 IAsset encodedAsset = encodingTask.OutputAssets.FirstOrDefault();
                 string streamUrl = PublishOnDemand(encodedAsset);
                 IAsset originalVideo = GetAssetById(assetId);
+                if(originalVideo !=null)
                 originalVideo.DeleteAsync(false);
+
                 state.StreamUrl = streamUrl.Replace("http:", "https:");
             }
 
